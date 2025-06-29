@@ -7,9 +7,9 @@ import {
     Button,
     FormFeedback,
 } from 'reactstrap';
-import { useNavigate } from 'react-router-dom';
 
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const initialForm = {
     email: '',
@@ -26,7 +26,6 @@ export default function Login() {
     const [form, setForm] = useState(initialForm);
     const [errors, setErrors] = useState({ email: '', password: '' });
     const [isValid, setIsValid] = useState(false);
-
     const navigate = useNavigate();
 
     const handleChange = (event) => {
@@ -48,9 +47,9 @@ export default function Login() {
                 );
                 if (user) {
                     setForm(initialForm);
-                    navigate('/main');
+                    navigate('/success');
                 } else {
-                    navigate('/error');
+                    alert('Invalid credentials');
                 }
             });
     };
@@ -61,8 +60,8 @@ export default function Login() {
 
     useEffect(() => {
         const newErrors = {
-            email: !emailIsValid(form.email) ? errorMessages.email : '',
-            password: form.password.length < 4 ? errorMessages.password : '',
+            email: form.email.length !== 0 && !emailIsValid(form.email) ? errorMessages.email : '',
+            password: form.password.length !== 0 && form.password.length < 4 ? errorMessages.password : '',
         };
 
         setErrors(newErrors);
@@ -82,7 +81,7 @@ export default function Login() {
                     value={form.email}
                     invalid={errors.email !== ''}
                 />
-                {errors.email && <FormFeedback>{errors.email}</FormFeedback>}
+                {errors.email && <FormFeedback data-testid="formfeedbackEmail">{errors.email}</FormFeedback>}
             </FormGroup>
             <FormGroup>
                 <Label for="examplePassword">Password</Label>
@@ -95,7 +94,7 @@ export default function Login() {
                     value={form.password}
                     invalid={errors.password !== ''}
                 />
-                {errors.password && <FormFeedback>{errors.password}</FormFeedback>}
+                {errors.password && <FormFeedback data-testid="formfeedbackPassword">{errors.password}</FormFeedback>}
             </FormGroup>
             <FormGroup check>
                 <Input
@@ -104,13 +103,14 @@ export default function Login() {
                     checked={form.terms}
                     type="checkbox"
                     onChange={handleChange}
+                    data-testid="termsCheckbox"
                 />{' '}
                 <Label htmlFor="terms" check>
                     I agree to terms of service and privacy policy
                 </Label>
             </FormGroup>
             <FormGroup className="text-center p-4">
-                <Button color="primary" disabled={!isValid}>
+                <Button color="primary" data-testid="sign-in-button" disabled={!isValid || !form.terms}>
                     Sign In
                 </Button>
             </FormGroup>
